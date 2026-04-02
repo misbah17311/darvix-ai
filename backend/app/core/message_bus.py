@@ -14,18 +14,28 @@ settings = get_settings()
 _redis: redis.Redis | None = None
 
 
-async def get_redis() -> redis.Redis:
+async def get_redis() -> redis.Redis | None:
     global _redis
     if _redis is None:
-        _redis = redis.from_url(settings.redis_url, decode_responses=True)
+        try:
+            _redis = redis.from_url(settings.redis_url, decode_responses=True)
+            await _redis.ping()
+        except Exception as e:
+            logger.warning(f"Redis unavailable: {e}. Running without real-time events.")
+            _redis = None
     return _redis
 
 
 async def publish_event(stream: str, data: dict):
     """Publish an event to a Redis stream."""
-    r = await get_redis()
-    await r.xadd(stream, {"data": json.dumps(data)})
-    logger.debug(f"Published to {stream}: {data.get('type', 'unknown')}")
+    try:
+        r = await get_redis()
+        if r is None:
+            return
+        await r.xadd(stream, {"data": json.dumps(data)})
+        logger.debug(f"Published to {stream}: {data.get('type', 'unknown')}")
+    except Exception as e:
+        logger.warning(f"Redis publish failed: {e}")
 
 
 async def subscribe_events(stream: str, group: str, consumer: str) -> AsyncGenerator[dict, None]:

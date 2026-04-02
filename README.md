@@ -1,5 +1,8 @@
 # DARVIX — AI-Powered Omnichannel Customer Experience Platform
 
+> **Live Demo:** [https://darvix-ai.onrender.com](https://darvix-ai.onrender.com)  
+> **GitHub:** [https://github.com/misbah17311/darvix-ai](https://github.com/misbah17311/darvix-ai)
+
 ## Architecture
 
 ```
