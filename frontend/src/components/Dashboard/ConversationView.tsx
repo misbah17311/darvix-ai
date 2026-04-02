@@ -6,7 +6,6 @@ import {
   Bot,
   User,
   Headphones,
-  AlertTriangle,
   Sparkles,
   MessageSquare,
   Mail,
