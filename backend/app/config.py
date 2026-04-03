@@ -7,9 +7,8 @@ class Settings(BaseSettings):
     app_name: str = "DARVIX"
     debug: bool = False
 
-    # Database
-    database_url: str = "postgresql+asyncpg://darvix:darvix@localhost:5432/darvix"
-    database_url_sync: str = "postgresql://darvix:darvix@localhost:5432/darvix"
+    # Database — defaults to local SQLite so it works without external DB
+    database_url: str = "sqlite+aiosqlite:///./data/darvix.db"
 
     @model_validator(mode="after")
     def fix_database_url(self):

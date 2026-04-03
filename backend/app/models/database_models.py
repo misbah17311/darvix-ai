@@ -4,9 +4,12 @@ from enum import Enum
 from sqlalchemy import (
     Column, String, Float, Integer, DateTime, Text, ForeignKey, Boolean, Enum as SAEnum
 )
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from app.db.database import Base
+
+
+def _uuid_default():
+    return str(uuid.uuid4())
 
 
 class ChannelType(str, Enum):
@@ -45,7 +48,7 @@ class UrgencyLevel(int, Enum):
 class Customer(Base):
     __tablename__ = "customers"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String(36), primary_key=True, default=_uuid_default)
     external_id = Column(String(255), unique=True, index=True, nullable=True)
     name = Column(String(255), nullable=True)
     email = Column(String(255), index=True, nullable=True)
@@ -63,7 +66,7 @@ class Customer(Base):
 class Agent(Base):
     __tablename__ = "agents"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String(36), primary_key=True, default=_uuid_default)
     name = Column(String(255), nullable=False)
     email = Column(String(255), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
@@ -81,9 +84,9 @@ class Agent(Base):
 class Conversation(Base):
     __tablename__ = "conversations"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    customer_id = Column(UUID(as_uuid=True), ForeignKey("customers.id"), nullable=False)
-    agent_id = Column(UUID(as_uuid=True), ForeignKey("agents.id"), nullable=True)
+    id = Column(String(36), primary_key=True, default=_uuid_default)
+    customer_id = Column(String(36), ForeignKey("customers.id"), nullable=False)
+    agent_id = Column(String(36), ForeignKey("agents.id"), nullable=True)
     channel = Column(SAEnum(ChannelType), nullable=False)
     status = Column(SAEnum(ConversationStatus), default=ConversationStatus.ACTIVE)
     intent = Column(String(100), nullable=True)
@@ -104,10 +107,10 @@ class Conversation(Base):
 class Message(Base):
     __tablename__ = "messages"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    conversation_id = Column(UUID(as_uuid=True), ForeignKey("conversations.id"), nullable=False)
+    id = Column(String(36), primary_key=True, default=_uuid_default)
+    conversation_id = Column(String(36), ForeignKey("conversations.id"), nullable=False)
     sender = Column(SAEnum(MessageSender), nullable=False)
-    sender_id = Column(UUID(as_uuid=True), nullable=True)  # agent or customer UUID
+    sender_id = Column(String(36), nullable=True)  # agent or customer UUID
     channel = Column(SAEnum(ChannelType), nullable=False)
     content = Column(Text, nullable=False)
     content_type = Column(String(50), default="text")  # text, image, file, audio
@@ -124,9 +127,9 @@ class Message(Base):
 class AIDecisionLog(Base):
     __tablename__ = "ai_decision_logs"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    conversation_id = Column(UUID(as_uuid=True), ForeignKey("conversations.id"), nullable=False)
-    message_id = Column(UUID(as_uuid=True), ForeignKey("messages.id"), nullable=True)
+    id = Column(String(36), primary_key=True, default=_uuid_default)
+    conversation_id = Column(String(36), ForeignKey("conversations.id"), nullable=False)
+    message_id = Column(String(36), ForeignKey("messages.id"), nullable=True)
     decision_type = Column(String(50), nullable=False)  # auto_respond, suggest, escalate, route
     intent = Column(String(100), nullable=True)
     confidence = Column(Float, nullable=True)
