@@ -70,7 +70,7 @@ async def health():
 if STATIC_DIR.is_dir():
     app.mount("/assets", StaticFiles(directory=STATIC_DIR / "assets"), name="assets")
 
-    @app.get("/{full_path:path}")
+    @app.api_route("/{full_path:path}", methods=["GET", "HEAD"])
     async def serve_frontend(request: Request, full_path: str):
         """Serve the React SPA — all non-API routes return index.html."""
         file_path = STATIC_DIR / full_path
