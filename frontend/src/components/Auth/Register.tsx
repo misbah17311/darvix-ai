@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { api } from '../../services/api';
 
-interface LoginProps {
-  onLogin: (token: string) => void;
-  onShowRegister: () => void;
+interface RegisterProps {
+  onRegistered: () => void;
+  onBackToLogin: () => void;
 }
 
-export default function Login({ onLogin, onShowRegister }: LoginProps) {
+export default function Register({ onRegistered, onBackToLogin }: RegisterProps) {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,10 +19,10 @@ export default function Login({ onLogin, onShowRegister }: LoginProps) {
     setLoading(true);
 
     try {
-      const result = await api.login(email, password);
-      onLogin(result.access_token);
+      await api.register({ name, email, password });
+      onRegistered();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -32,10 +33,22 @@ export default function Login({ onLogin, onShowRegister }: LoginProps) {
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-darvix-900">DARVIX</h1>
-          <p className="text-gray-500 mt-2">AI-Powered Omnichannel CX Platform</p>
+          <p className="text-gray-500 mt-2">Create Your Agent Account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-darvix-500 focus:border-transparent outline-none"
+              placeholder="Jane Smith"
+              required
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
@@ -57,6 +70,7 @@ export default function Login({ onLogin, onShowRegister }: LoginProps) {
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-darvix-500 focus:border-transparent outline-none"
               placeholder="••••••••"
               required
+              minLength={6}
             />
           </div>
 
@@ -69,21 +83,15 @@ export default function Login({ onLogin, onShowRegister }: LoginProps) {
             disabled={loading}
             className="w-full bg-darvix-600 hover:bg-darvix-700 text-white font-medium py-2.5 rounded-lg transition-colors disabled:opacity-50"
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Creating Account...' : 'Create Account'}
           </button>
 
           <p className="text-center text-sm text-gray-500">
-            Don't have an account?{' '}
-            <button type="button" onClick={onShowRegister} className="text-darvix-600 hover:underline font-medium">
-              Create Account
+            Already have an account?{' '}
+            <button type="button" onClick={onBackToLogin} className="text-darvix-600 hover:underline font-medium">
+              Sign In
             </button>
           </p>
-
-          <div className="border-t pt-4">
-            <p className="text-center text-xs text-gray-400">
-              Demo credentials: <span className="font-mono">demo@darvix.ai</span> / <span className="font-mono">demo1234</span>
-            </p>
-          </div>
         </form>
       </div>
     </div>
