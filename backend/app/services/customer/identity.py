@@ -45,7 +45,7 @@ async def resolve_customer(
 
     # Create new customer
     customer = Customer(
-        id=uuid.uuid4(),
+        id=str(uuid.uuid4()),
         email=identifier if channel == ChannelType.EMAIL else None,
         phone=identifier if channel in (ChannelType.WHATSAPP, ChannelType.VOICE) else None,
         name=name,
@@ -57,7 +57,7 @@ async def resolve_customer(
     return customer
 
 
-async def get_customer_context(db: AsyncSession, customer_id: uuid.UUID) -> dict:
+async def get_customer_context(db: AsyncSession, customer_id: str) -> dict:
     """
     Build rich customer context for AI processing.
     Includes profile data, recent conversations, and computed metrics.
@@ -91,7 +91,7 @@ async def get_customer_context(db: AsyncSession, customer_id: uuid.UUID) -> dict
 
 
 async def get_conversation_history(
-    db: AsyncSession, conversation_id: uuid.UUID
+    db: AsyncSession, conversation_id: str
 ) -> list[dict]:
     """Get message history for a conversation."""
     result = await db.execute(

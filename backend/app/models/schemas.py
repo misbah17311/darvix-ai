@@ -15,7 +15,7 @@ class CustomerCreate(BaseModel):
 
 
 class CustomerResponse(BaseModel):
-    id: uuid.UUID
+    id: str
     name: Optional[str]
     email: Optional[str]
     phone: Optional[str]
@@ -39,8 +39,8 @@ class InboundMessage(BaseModel):
 
 
 class MessageResponse(BaseModel):
-    id: uuid.UUID
-    conversation_id: uuid.UUID
+    id: str
+    conversation_id: str
     sender: MessageSender
     channel: ChannelType
     content: str
@@ -57,9 +57,9 @@ class MessageResponse(BaseModel):
 # --- Conversation Schemas ---
 
 class ConversationResponse(BaseModel):
-    id: uuid.UUID
-    customer_id: uuid.UUID
-    agent_id: Optional[uuid.UUID]
+    id: str
+    customer_id: str
+    agent_id: Optional[str]
     channel: ChannelType
     status: ConversationStatus
     intent: Optional[str]
@@ -117,7 +117,7 @@ class AgentCreate(BaseModel):
 
 
 class AgentResponse(BaseModel):
-    id: uuid.UUID
+    id: str
     name: str
     email: str
     role: str
@@ -156,6 +156,6 @@ class DashboardMetrics(BaseModel):
 
 class RoutingResult(BaseModel):
     decision: str  # auto_respond, assign_agent, escalate
-    agent_id: Optional[uuid.UUID] = None
+    agent_id: Optional[str] = None
     agent_name: Optional[str] = None
     reason: str = ""

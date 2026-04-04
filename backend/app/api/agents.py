@@ -28,7 +28,7 @@ async def register_agent(
         raise HTTPException(status_code=400, detail="Email already registered")
 
     agent = Agent(
-        id=uuid.uuid4(),
+        id=str(uuid.uuid4()),
         name=agent_data.name,
         email=agent_data.email,
         password_hash=hash_password(agent_data.password),
@@ -74,7 +74,7 @@ async def logout(
     db: AsyncSession = Depends(get_db),
 ):
     """Mark agent as offline."""
-    agent = await db.get(Agent, uuid.UUID(current_agent["sub"]))
+    agent = await db.get(Agent, current_agent["sub"])
     if agent:
         agent.is_online = False
         agent.is_available = False
@@ -87,7 +87,7 @@ async def get_current_agent_profile(
     db: AsyncSession = Depends(get_db),
 ):
     """Get current agent's profile."""
-    agent = await db.get(Agent, uuid.UUID(current_agent["sub"]))
+    agent = await db.get(Agent, current_agent["sub"])
     if not agent:
         raise HTTPException(status_code=404, detail="Agent not found")
     return agent
@@ -108,7 +108,7 @@ async def list_agents(
 
 @router.patch("/{agent_id}/status")
 async def update_agent_status(
-    agent_id: uuid.UUID,
+    agent_id: str,
     body: dict,
     db: AsyncSession = Depends(get_db),
 ):

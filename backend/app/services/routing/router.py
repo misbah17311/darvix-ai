@@ -48,7 +48,7 @@ async def route_conversation(
     db: AsyncSession,
     conversation: Conversation,
     analysis: AIAnalysis,
-    customer_id: uuid.UUID,
+    customer_id: str,
 ) -> RoutingResult:
     """
     Route a conversation based on AI analysis.
@@ -87,7 +87,7 @@ async def route_conversation(
 async def _find_best_agent(
     db: AsyncSession,
     intent: str,
-    customer_id: uuid.UUID,
+    customer_id: str,
 ) -> Agent | None:
     """Find the best available agent using weighted scoring."""
     result = await db.execute(

@@ -22,7 +22,7 @@ router = APIRouter(prefix="/api", tags=["conversations"])
 @router.get("/conversations", response_model=list[ConversationResponse])
 async def list_conversations(
     status: ConversationStatus | None = None,
-    agent_id: uuid.UUID | None = None,
+    agent_id: str | None = None,
     limit: int = Query(default=50, le=200),
     db: AsyncSession = Depends(get_db),
 ):
@@ -40,7 +40,7 @@ async def list_conversations(
 
 @router.get("/conversations/{conversation_id}", response_model=ConversationDetail)
 async def get_conversation(
-    conversation_id: uuid.UUID,
+    conversation_id: str,
     db: AsyncSession = Depends(get_db),
 ):
     """Get full conversation with messages and customer info."""
@@ -57,7 +57,7 @@ async def get_conversation(
 
 @router.post("/conversations/{conversation_id}/resolve")
 async def resolve_conversation(
-    conversation_id: uuid.UUID,
+    conversation_id: str,
     db: AsyncSession = Depends(get_db),
 ):
     """Mark a conversation as resolved."""
@@ -81,7 +81,7 @@ async def resolve_conversation(
 
 @router.get("/customers/{customer_id}", response_model=CustomerResponse)
 async def get_customer(
-    customer_id: uuid.UUID,
+    customer_id: str,
     db: AsyncSession = Depends(get_db),
 ):
     """Get customer profile."""

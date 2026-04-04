@@ -61,10 +61,10 @@ async def handle_inbound_message(
 
     # 4. Store inbound message
     db_message = Message(
-        id=uuid.uuid4(),
+        id=str(uuid.uuid4()),
         conversation_id=conversation.id,
         sender=MessageSender.CUSTOMER,
-        sender_id=customer.id,
+        sender_id=str(customer.id),
         channel=channel,
         content=message.content,
         content_type=message.content_type,
@@ -104,7 +104,7 @@ async def handle_inbound_message(
         )
 
         ai_message = Message(
-            id=uuid.uuid4(),
+            id=str(uuid.uuid4()),
             conversation_id=conversation.id,
             sender=MessageSender.AI,
             channel=channel,
@@ -132,7 +132,7 @@ async def handle_inbound_message(
         )
 
         suggestion = Message(
-            id=uuid.uuid4(),
+            id=str(uuid.uuid4()),
             conversation_id=conversation.id,
             sender=MessageSender.AI,
             channel=channel,
@@ -155,7 +155,7 @@ async def handle_inbound_message(
 
     # Log AI decision
     decision_log = AIDecisionLog(
-        id=uuid.uuid4(),
+        id=str(uuid.uuid4()),
         conversation_id=conversation.id,
         message_id=db_message.id,
         decision_type=routing.decision,
@@ -185,7 +185,7 @@ async def handle_inbound_message(
 
 @router.post("/agent-send/{conversation_id}", response_model=MessageResponse)
 async def agent_send_message(
-    conversation_id: uuid.UUID,
+    conversation_id: str,
     body: dict,
     db: AsyncSession = Depends(get_db),
 ):
@@ -198,10 +198,10 @@ async def agent_send_message(
     content = body.get("content", "")
 
     msg = Message(
-        id=uuid.uuid4(),
+        id=str(uuid.uuid4()),
         conversation_id=conversation_id,
         sender=MessageSender.AGENT,
-        sender_id=uuid.UUID(agent_id) if agent_id else None,
+        sender_id=agent_id,
         channel=conversation.channel,
         content=content,
     )
@@ -236,7 +236,7 @@ async def agent_send_message(
 
 async def _find_or_create_conversation(
     db: AsyncSession,
-    customer_id: uuid.UUID,
+    customer_id: str,
     channel: ChannelType,
 ) -> Conversation:
     """Find an active conversation for this customer or create a new one."""
@@ -262,7 +262,7 @@ async def _find_or_create_conversation(
         return existing
 
     conversation = Conversation(
-        id=uuid.uuid4(),
+        id=str(uuid.uuid4()),
         customer_id=customer_id,
         channel=channel,
         status=ConversationStatus.ACTIVE,
